@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operations KPI Dashboard - Power BI Style</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body style="margin: 0; padding: 0;">
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+        
+        const TrendingUp = ({ size = 14, color = "currentColor" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+        );
+        
+        const TrendingDown = ({ size = 14, color = "currentColor" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                <polyline points="17 18 23 18 23 12"></polyline>
+            </svg>
+        );
+        
+        const DollarSign = ({ size = 80, color = "currentColor" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+        );
+        
+        const Package = ({ size = 80, color = "currentColor" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+                <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+        );
+        
+        const Truck = ({ size = 80, color = "currentColor" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+                <rect x="1" y="3" width="15" height="13"></rect>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+            </svg>
+        );
+        
+        const AlertCircle = ({ size = 80, color = "currentColor" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        );
+
+        const OperationsDashboard = () => {
+            const [selectedPeriod, setSelectedPeriod] = useState('Last 12 Months');
+            const [hoveredBar, setHoveredBar] = useState(null);
+            const [hoveredRow, setHoveredRow] = useState(null);
+
+            const kpiData = [
+                {
+                    title: 'Cost Reduction',
+                    value: '27.3%',
+                    change: '+5.2%',
+                    trend: 'up',
+                    target: '25%',
+                    icon: DollarSign,
+                    color: '#00B050'
+                },
+                {
+                    title: 'Inventory Turnover',
+                    value: '8.4x',
+                    change: '+1.2x',
+                    trend: 'up',
+                    target: '7.5x',
+                    icon: Package,
+                    color: '#0078D4'
+                },
+                {
+                    title: 'Fulfillment Rate',
+                    value: '96.8%',
+                    change: '+2.4%',
+                    trend: 'up',
+                    target: '95%',
+                    icon: Truck,
+                    color: '#8764B8'
+                },
+                {
+                    title: 'Supplier Performance',
+                    value: '92.5%',
+                    change: '-1.8%',
+                    trend: 'down',
+                    target: '95%',
+                    icon: AlertCircle,
+                    color: '#E74856'
+                }
+            ];
+
+            const costData = [
+                { month: 'Jan', cost: 145000 },
+                { month: 'Feb', cost: 138000 },
+                { month: 'Mar', cost: 132000 },
+                { month: 'Apr', cost: 128000 },
+                { month: 'May', cost: 125000 },
+                { month: 'Jun', cost: 120000 },
+                { month: 'Jul', cost: 118000 },
+                { month: 'Aug', cost: 115000 },
+                { month: 'Sep', cost: 112000 },
+                { month: 'Oct', cost: 108000 },
+                { month: 'Nov', cost: 106000 },
+                { month: 'Dec', cost: 105000 }
+            ];
+
+            const supplierPerformance = [
+                { name: 'TechSupply Inc.', rating: 98, onTime: 99, quality: 97, value: 485000 },
+                { name: 'Global Parts Co.', rating: 95, onTime: 96, quality: 94, value: 412000 },
+                { name: 'Premier Logistics', rating: 93, onTime: 95, quality: 91, value: 378000 },
+                { name: 'Alpha Components', rating: 88, onTime: 89, quality: 87, value: 295000 },
+                { name: 'Beta Manufacturing', rating: 85, onTime: 82, quality: 88, value: 268000 }
+            ];
+
+            const costCategories = [
+                { category: 'Warehousing', amount: 320000, percentage: 42, color: '#0078D4' },
+                { category: 'Transportation', amount: 228000, percentage: 30, color: '#8764B8' },
+                { category: 'Labor', amount: 152000, percentage: 20, color: '#00B050' },
+                { category: 'Technology', amount: 61000, percentage: 8, color: '#FFB900' }
+            ];
+
+            const maxCost = Math.max(...costData.map(d => d.cost));
+            const minCost = Math.min(...costData.map(d => d.cost));
+
+            return (
+                <div style={{ 
+                    fontFamily: '"Segoe UI", system-ui, sans-serif',
+                    backgroundColor: '#f3f2f1',
+                    minHeight: '100vh',
+                    padding: '0'
+                }}>
+                    <div style={{ 
+                        backgroundColor: '#323130',
+                        padding: '16px 32px',
+                        borderBottom: '3px solid #0078D4'
+                    }}>
+                        <h1 style={{ 
+                            margin: 0,
+                            color: 'white',
+                            fontSize: '24px',
+                            fontWeight: '600'
+                        }}>
+                            Operations Performance Dashboard
+                        </h1>
+                        <div style={{ 
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '24px',
+                            marginTop: '8px'
+                        }}>
+                            <span style={{ 
+                                color: '#c8c6c4',
+                                fontSize: '13px'
+                            }}>
+                                Last Updated: Dec 02, 2024
+                            </span>
+                            <select 
+                                value={selectedPeriod}
+                                onChange={(e) => setSelectedPeriod(e.target.value)}
+                                style={{ 
+                                    padding: '6px 12px',
+                                    backgroundColor: '#484644',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '2px',
+                                    fontSize: '12px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <option>Last 12 Months</option>
+                                <option>Last 6 Months</option>
+                                <option>Last Quarter</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style={{ padding: '24px 32px' }}>
+                        <div style={{ 
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(4, 1fr)',
+                            gap: '16px',
+                            marginBottom: '24px'
+                        }}>
+                            {kpiData.map((kpi, idx) => {
+                                const Icon = kpi.icon;
+                                return (
+                                    <div key={idx} style={{ 
+                                        backgroundColor: 'white',
+                                        borderRadius: '8px',
+                                        padding: '20px',
+                                        boxShadow: '0 1.6px 3.6px rgba(0,0,0,0.13)',
+                                        borderTop: `4px solid ${kpi.color}`,
+                                        position: 'relative',
+                                        overflow: 'hidden'
+                                    }}>
+                                        <div style={{ 
+                                            position: 'absolute',
+                                            top: '-10px',
+                                            right: '-10px',
+                                            opacity: 0.08
+                                        }}>
+                                            <Icon />
+                                        </div>
+                                        <div style={{ position: 'relative', zIndex: 1 }}>
+                                            <div style={{ 
+                                                fontSize: '11px',
+                                                color: '#605e5c',
+                                                marginBottom: '12px',
+                                                fontWeight: '600',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.5px'
+                                            }}>
+                                                {kpi.title}
+                                            </div>
+                                            <div style={{ 
+                                                fontSize: '32px',
+                                                fontWeight: '700',
+                                                color: '#323130',
+                                                marginBottom: '8px',
+                                                lineHeight: '1'
+                                            }}>
+                                                {kpi.value}
+                                            </div>
+                                            <div style={{ 
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center'
+                                            }}>
+                                                <div style={{ 
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px',
+                                                    fontSize: '12px',
+                                                    color: kpi.trend === 'up' ? '#00B050' : '#E74856',
+                                                    fontWeight: '600'
+                                                }}>
+                                                    {kpi.trend === 'up' ? <TrendingUp /> : <TrendingDown />}
+                                                    {kpi.change}
+                                                </div>
+                                                <div style={{ 
+                                                    fontSize: '11px',
+                                                    color: '#8a8886',
+                                                    fontWeight: '500'
+                                                }}>
+                                                    Target: {kpi.target}
+                                                </div>
+                                            </div>
+                                            <div style={{ 
+                                                marginTop: '12px',
+                                                height: '4px',
+                                                backgroundColor: '#edebe9',
+                                                borderRadius: '2px',
+                                                overflow: 'hidden'
+                                            }}>
+                                                <div style={{ 
+                                                    height: '100%',
+                                                    width: kpi.trend === 'up' ? '85%' : '65%',
+                                                    backgroundColor: kpi.color,
+                                                    borderRadius: '2px',
+                                                    transition: 'width 1s ease'
+                                                }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <div style={{ 
+                            display: 'grid',
+                            gridTemplateColumns: '1.5fr 1fr',
+                            gap: '16px',
+                            marginBottom: '16px'
+                        }}>
+                            <div style={{ 
+                                backgroundColor: 'white',
+                                borderRadius: '8px',
+                                padding: '24px',
+                                boxShadow: '0 1.6px 3.6px rgba(0,0,0,0.13)'
+                            }}>
+                                <h2 style={{ 
+                                    margin: '0 0 24px 0',
+                                    fontSize: '16px',
+                                    fontWeight: '600',
+                                    color: '#323130',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px'
+                                }}>
+                                    <div style={{ 
+                                        width: '4px',
+                                        height: '20px',
+                                        backgroundColor: '#0078D4',
+                                        borderRadius: '2px'
+                                    }} />
+                                    Operational Cost Trend
+                                </h2>
+                                <div style={{ 
+                                    display: 'flex',
+                                    alignItems: 'flex-end',
+                                    justifyContent: 'space-between',
+                                    height: '280px',
+                                    gap: '8px',
+                                    padding: '16px 0'
+                                }}>
+                                    {costData.map((data, idx) => (
+                                        <div key={idx} style={{ 
+                                            flex: 1,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            gap: '6px'
+                                        }}>
+                                            <div style={{ 
+                                                fontSize: '10px',
+                                                color: '#605e5c',
+                                                fontWeight: '600'
+                                            }}>
+                                                ${(data.cost / 1000).toFixed(0)}K
+                                            </div>
+                                            <div 
+                                                style={{ 
+                                                    width: '100%',
+                                                    background: 'linear-gradient(to top, #0078D4, #50E6FF)',
+                                                    height: `${((maxCost - data.cost) / (maxCost - minCost)) * 200 + 40}px`,
+                                                    borderRadius: '4px 4px 0 0',
+                                                    transition: 'all 0.3s ease',
+                                                    cursor: 'pointer',
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                    transform: hoveredBar === idx ? 'scaleY(1.05)' : 'scaleY(1)'
+                                                }}
+                                                onMouseEnter={() => setHoveredBar(idx)}
+                                                onMouseLeave={() => setHoveredBar(null)}
+                                            />
+                                            <div style={{ 
+                                                fontSize: '11px',
+                                                color: '#323130',
+                                                fontWeight: '600'
+                                            }}>
+                                                {data.month}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div style={{ 
+                                    marginTop: '16px',
+                                    padding: '12px',
+                                    backgroundColor: '#E1F5F7',
+                                    borderRadius: '4px',
+                                    borderLeft: '4px solid #00B050'
+                                }}>
+                                    <div style={{ 
+                                        fontSize: '12px',
+                                        color: '#004B50',
+                                        fontWeight: '600'
+                                    }}>
+                                        Cost savings of $40K achieved through process optimization
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style={{ 
+                                backgroundColor: 'white',
+                                borderRadius: '8px',
+                                padding: '24px',
+                                boxShadow: '0 1.6px 3.6px rgba(0,0,0,0.13)'
+                            }}>
+                                <h2 style={{ 
+                                    margin: '0 0 24px 0',
+                                    fontSize: '16px',
+                                    fontWeight: '600',
+                                    color: '#323130',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px'
+                                }}>
+                                    <div style={{ 
+                                        width: '4px',
+                                        height: '20px',
+                                        backgroundColor: '#8764B8',
+                                        borderRadius: '2px'
+                                    }} />
+                                    Cost Distribution by Category
+                                </h2>
+                                <div style={{ 
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '20px'
+                                }}>
+                                    {costCategories.map((cat, idx) => (
+                                        <div key={idx}>
+                                            <div style={{ 
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                marginBottom: '8px'
+                                            }}>
+                                                <span style={{ 
+                                                    fontSize: '13px',
+                                                    color: '#323130',
+                                                    fontWeight: '600'
+                                                }}>
+                                                    {cat.category}
+                                                </span>
+                                                <span style={{ 
+                                                    fontSize: '13px',
+                                                    color: '#605e5c',
+                                                    fontWeight: '600'
+                                                }}>
+                                                    {cat.percentage}%
+                                                </span>
+                                            </div>
+                                            <div style={{ 
+                                                width: '100%',
+                                                height: '32px',
+                                                backgroundColor: '#f3f2f1',
+                                                borderRadius: '4px',
+                                                overflow: 'hidden',
+                                                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)'
+                                            }}>
+                                                <div style={{ 
+                                                    width: `${cat.percentage}%`,
+                                                    height: '100%',
+                                                    backgroundColor: cat.color,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    paddingLeft: '12px',
+                                                    fontSize: '12px',
+                                                    color: 'white',
+                                                    fontWeight: '700',
+                                                    transition: 'width 1.5s ease',
+                                                    boxShadow: '2px 0 8px rgba(0,0,0,0.2)'
+                                                }}>
+                                                    ${cat.amount.toLocaleString()}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div style={{ 
+                                    marginTop: '24px',
+                                    padding: '16px',
+                                    backgroundColor: '#FFF4CE',
+                                    borderRadius: '4px',
+                                    borderLeft: '4px solid #FFB900'
+                                }}>
+                                    <div style={{ 
+                                        fontSize: '11px',
+                                        color: '#605e5c',
+                                        fontWeight: '600',
+                                        marginBottom: '4px'
+                                    }}>
+                                        TOTAL OPERATIONAL COST
+                                    </div>
+                                    <div style={{ 
+                                        fontSize: '24px',
+                                        color: '#323130',
+                                        fontWeight: '700'
+                                    }}>
+                                        $761,000
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={{ 
+                            backgroundColor: 'white',
+                            borderRadius: '8px',
+                            padding: '24px',
+                            boxShadow: '0 1.6px 3.6px rgba(0,0,0,0.13)'
+                        }}>
+                            <h2 style={{ 
+                                margin: '0 0 20px 0',
+                                fontSize: '16px',
+                                fontWeight: '600',
+                                color: '#323130',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}>
+                                <div style={{ 
+                                    width: '4px',
+                                    height: '20px',
+                                    backgroundColor: '#00B050',
+                                    borderRadius: '2px'
+                                }} />
+                                Supplier Performance Metrics
+                            </h2>
+                            <div style={{ 
+                                display: 'grid',
+                                gap: '12px'
+                            }}>
+                                <div style={{ 
+                                    display: 'grid',
+                                    gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
+                                    gap: '12px',
+                                    padding: '12px',
+                                    backgroundColor: '#f3f2f1',
+                                    borderRadius: '4px',
+                                    fontSize: '11px',
+                                    fontWeight: '700',
+                                    color: '#323130',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px'
+                                }}>
+                                    <div>Supplier Name</div>
+                                    <div style={{ textAlign: 'center' }}>Overall Rating</div>
+                                    <div style={{ textAlign: 'center' }}>On-Time %</div>
+                                    <div style={{ textAlign: 'center' }}>Quality %</div>
+                                    <div style={{ textAlign: 'right' }}>Value</div>
+                                </div>
+                                {supplierPerformance.map((supplier, idx) => (
+                                    <div 
+                                        key={idx} 
+                                        style={{ 
+                                            display: 'grid',
+                                            gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
+                                            gap: '12px',
+                                            padding: '14px 12px',
+                                            backgroundColor: hoveredRow === idx ? '#E1F5F7' : (idx % 2 === 0 ? 'white' : '#faf9f8'),
+                                            borderRadius: '4px',
+                                            alignItems: 'center',
+                                            borderLeft: `4px solid ${supplier.rating >= 95 ? '#00B050' : supplier.rating >= 90 ? '#FFB900' : '#E74856'}`,
+                                            transition: 'all 0.2s ease',
+                                            cursor: 'pointer'
+                                        }}
+                                        onMouseEnter={() => setHoveredRow(idx)}
+                                        onMouseLeave={() => setHoveredRow(null)}
+                                    >
+                                        <div style={{ 
+                                            fontSize: '13px',
+                                            color: '#323130',
+                                            fontWeight: '600'
+                                        }}>
+                                            {supplier.name}
+                                        </div>
+                                        <div style={{ 
+                                            textAlign: 'center',
+                                            fontSize: '16px',
+                                            color: supplier.rating >= 95 ? '#00B050' : supplier.rating >= 90 ? '#FFB900' : '#E74856',
+                                            fontWeight: '700'
+                                        }}>
+                                            {supplier.rating}
+                                        </div>
+                                        <div style={{ 
+                                            textAlign: 'center',
+                                            fontSize: '13px',
+                                            color: '#605e5c',
+                                            fontWeight: '600'
+                                        }}>
+                                            {supplier.onTime}%
+                                        </div>
+                                        <div style={{ 
+                                            textAlign: 'center',
+                                            fontSize: '13px',
+                                            color: '#605e5c',
+                                            fontWeight: '600'
+                                        }}>
+                                            {supplier.quality}%
+                                        </div>
+                                        <div style={{ 
+                                            textAlign: 'right',
+                                            fontSize: '14px',
+                                            color: '#0078D4',
+                                            fontWeight: '700'
+                                        }}>
+                                            ${supplier.value.toLocaleString()}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<OperationsDashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>
